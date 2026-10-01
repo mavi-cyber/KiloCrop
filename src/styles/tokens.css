@@ -1,0 +1,50 @@
+/* KiloCrop "Darkroom" design tokens - one signature dark look. */
+
+:root {
+  color-scheme: dark;
+
+  /* Graphite surfaces, darkest to lightest */
+  --bg: #0c0d10;
+  --chrome: #121418;
+  --panel: #15171c;
+  --raised: #1b1e24;
+  --hover: #22262e;
+  --well: #0f1115;
+
+  --line: #24272f;
+  --line-2: #2f333d;
+
+  /* Text */
+  --text: #e8eaf0;
+  --text-muted: #8b91a1;
+  --text-faint: #6b7180;
+
+  /* Brand: teal for crop / action, amber for "kilo" / size */
+  --brand: #2ee6c5;
+  --brand-ink: #04201b;
+  --brand-wash: #0f3d36;
+  --kilo: #ffb547;
+  --kilo-ink: #3a2300;
+  --kilo-wash: #3a2a10;
+  --danger: #ff6b6b;
+  --danger-wash: #3d1518;
+  --ok: #5ee08a;
+  --ok-wash: #12301d;
+
+  /* Shape */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+  --focus: 0 0 0 2px var(--bg), 0 0 0 4px var(--brand);
+
+  /* Type */
+  --font: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'JetBrains Mono Variable', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* Layout */
+  --topbar-h: 56px;
+  --rail-w: 76px;
+  --inspector-w: 332px;
+  --tap: 44px;
+}

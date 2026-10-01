@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="KiloCrop">
+  <defs>
+    <linearGradient id="kc-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14b8a6"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#kc-bg)"/>
+  <!-- Two interlocking crop corners -->
+  <g fill="none" stroke="#ffffff" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M168 88 V344 H424"/>
+    <path d="M88 168 H344 V424"/>
+  </g>
+  <!-- "K" for kilo, sitting in the cropped window -->
+  <g fill="none" stroke="#fdba74" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M222 214 V298"/>
+    <path d="M290 214 L230 258"/>
+    <path d="M244 250 L292 298"/>
+  </g>
+</svg>

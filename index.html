@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <title>KiloCrop - Crop to any ratio, shrink to any KB size</title>
+    <meta
+      name="description"
+      content="Crop photos to any aspect ratio and resize them for passport, visa and upload limits - privately in your browser. Nothing is uploaded."
+    />
+    <meta name="theme-color" content="#121418" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
+    <link rel="canonical" href="https://mavi-cyber.github.io/KiloCrop/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="KiloCrop" />
+    <meta property="og:title" content="KiloCrop - Crop to any ratio, shrink to any KB size" />
+    <meta
+      property="og:description"
+      content="Passport, visa and upload-ready photos, made privately in your browser."
+    />
+    <meta property="og:image" content="https://mavi-cyber.github.io/KiloCrop/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body class="app" data-tab="crop" data-state="empty">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="KiloCrop home">
+        <img src="/logo-mark.svg" alt="" width="28" height="28" />
+        <span class="wordmark">Kilo<b>Crop</b></span>
+      </a>
+      <span id="file-chip" class="file-chip" hidden></span>
+      <span class="spacer"></span>
+      <a class="icon-btn" href="./about.html" aria-label="About and privacy" title="About and privacy"
+        ><i data-icon="info"></i
+      ></a>
+      <a
+        class="icon-btn desktop-only"
+        href="https://github.com/mavi-cyber/KiloCrop"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Source code on GitHub"
+        title="Source code on GitHub"
+        ><i data-icon="github"></i
+      ></a>
+      <button id="new-photo" class="btn btn-ghost" type="button" title="Open another photo (Ctrl+O)">
+        <i data-icon="image"></i><span class="desktop-only">New photo</span>
+      </button>
+      <button id="export" class="btn btn-accent" type="button" title="Export (Ctrl+S)" aria-haspopup="dialog">
+        <i data-icon="download"></i>Export
+      </button>
+    </header>
+
+    <nav class="rail" aria-label="Panels">
+      <button class="rail-btn" type="button" data-tab="crop" aria-pressed="true">
+        <i data-icon="crop"></i>Crop
+      </button>
+      <button class="rail-btn" type="button" data-tab="size" aria-pressed="false">
+        <i data-icon="size"></i>Size
+      </button>
+    </nav>
+
+    <main id="stage" class="stage" aria-label="Photo">
+      <div id="empty" class="empty">
+        <button id="choose" class="drop" type="button">
+          <span class="drop-icon"><i data-icon="upload"></i></span>
+          <span class="drop-title">Drop a photo here</span>
+          <span class="drop-sub">or <u>choose one</u> · JPEG, PNG, WebP</span>
+        </button>
+        <p class="pitch">Crop to any <em>ratio</em>. Shrink to any <strong>size</strong>.</p>
+        <ul class="trust">
+          <li><i data-icon="shield"></i>Never uploaded</li>
+          <li><i data-icon="offline"></i>Works offline</li>
+          <li><i data-icon="github"></i>Open source</li>
+        </ul>
+      </div>
+
+      <canvas
+        id="crop-canvas"
+        tabindex="0"
+        aria-label="Crop frame. Drag to move, drag corners to resize, arrow keys to nudge."
+        hidden
+      ></canvas>
+      <span id="tag-top" class="tag" hidden></span>
+      <span id="tag-bottom" class="tag tag-kilo" hidden></span>
+
+      <div id="dock" class="dock" role="toolbar" aria-label="Edit" hidden>
+        <button id="undo" class="dock-btn" type="button" aria-label="Undo" title="Undo (Ctrl+Z)">
+          <i data-icon="undo"></i>
+        </button>
+        <button id="redo" class="dock-btn" type="button" aria-label="Redo" title="Redo (Ctrl+Shift+Z)">
+          <i data-icon="redo"></i>
+        </button>
+        <span class="dock-sep"></span>
+        <button
+          id="rot-left"
+          class="dock-btn"
+          type="button"
+          aria-label="Rotate left"
+          title="Rotate left (Shift+R)"
+        >
+          <i data-icon="rotateLeft"></i>
+        </button>
+        <button
+          id="rot-right"
+          class="dock-btn"
+          type="button"
+          aria-label="Rotate right"
+          title="Rotate right (R)"
+        >
+          <i data-icon="rotateRight"></i>
+        </button>
+        <button
+          id="flip"
+          class="dock-btn"
+          type="button"
+          aria-label="Mirror"
+          title="Mirror (F)"
+          aria-pressed="false"
+        >
+          <i data-icon="flip"></i>
+        </button>
+        <span class="dock-sep"></span>
+        <button
+          id="guide"
+          class="dock-btn dock-kilo"
+          type="button"
+          aria-label="Head position guide"
+          title="Head guide (G)"
+          aria-pressed="true"
+        >
+          <i data-icon="guide"></i>
+        </button>
+        <button id="reset" class="dock-btn" type="button" aria-label="Reset crop" title="Reset crop">
+          <i data-icon="reset"></i>
+        </button>
+      </div>
+
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      <div class="veil" aria-hidden="true"><span>Drop to open</span></div>
+    </main>
+
+    <aside id="inspector" class="inspector" aria-label="Settings">
+      <section class="sec" data-section="crop" aria-labelledby="h-kb">
+        <div class="result-wrap">
+          <h2 class="sec-h" id="h-kb">Result <span id="result-dims" class="result-dims"></span></h2>
+          <div class="result">
+            <div class="result-thumb">
+              <canvas id="result-canvas" aria-label="Live preview of the exported photo"></canvas>
+            </div>
+            <div class="meter">
+              <div class="meter-top">
+                <span class="big"><span id="kb-value">-</span><small id="kb-unit"></small></span>
+                <span id="kb-flag" class="flag" hidden></span>
+              </div>
+              <div class="bar" aria-hidden="true"><i id="kb-bar"></i><b id="kb-limit-mark"></b></div>
+              <div class="meter-row"><span id="kb-quality"></span><span id="kb-limit"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="sec-h" id="h-ratio">Ratio</h2>
+        <div id="ratios" class="ratios" role="group" aria-label="Aspect ratio"></div>
+
+        <h2 class="sec-h" id="h-doc">Document <button id="all-docs" class="link" type="button"></button></h2>
+        <button id="doc-card" class="doc-card" type="button" aria-haspopup="dialog">
+          <span id="doc-code" class="code"></span>
+          <span class="doc-text"><b id="doc-title"></b><small id="doc-sub"></small></span>
+          <i data-icon="chevron"></i>
+        </button>
+        <dl id="spec" class="spec"></dl>
+      </section>
+
+      <section class="sec" data-section="size" aria-labelledby="h-size">
+        <h2 class="sec-h" id="h-size">Output</h2>
+        <div class="dims">
+          <span class="dim"><output id="out-w">-</output><em>W</em></span>
+          <span id="ratio-lock" class="lock" title="Ratio locked"><i data-icon="lock"></i></span>
+          <span class="dim"><output id="out-h">-</output><em>H</em></span>
+        </div>
+      </section>
+    </aside>
+
+    <dialog id="docs" class="docs" aria-labelledby="docs-title">
+      <form method="dialog" class="docs-head">
+        <h2 id="docs-title" class="visually-hidden">Choose a document</h2>
+        <label class="search">
+          <i data-icon="search"></i>
+          <input id="docs-search" type="search" placeholder="Search country or document" autocomplete="off" />
+        </label>
+        <button class="icon-btn" value="close" aria-label="Close"><i data-icon="close"></i></button>
+      </form>
+      <div id="docs-list" class="docs-list"></div>
+    </dialog>
+
+    <dialog id="export-dialog" class="export" aria-labelledby="export-title">
+      <form id="export-form" method="dialog">
+        <header class="export-head">
+          <h2 id="export-title">Export photo</h2>
+          <button class="icon-btn" type="button" value="cancel" data-close aria-label="Close">
+            <i data-icon="close"></i>
+          </button>
+        </header>
+
+        <div class="export-body">
+          <div class="export-preview"><canvas id="export-preview" aria-label="Preview"></canvas></div>
+
+          <div class="export-fields">
+            <label class="field">
+              <span class="field-label">File name</span>
+              <span class="name-field">
+                <input
+                  id="filename"
+                  type="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="KiloCrop-photo"
+                />
+                <span id="ext" class="ext">.jpg</span>
+              </span>
+            </label>
+
+            <div class="field">
+              <span class="field-label" id="format-label">Format</span>
+              <div id="formats" class="seg" role="radiogroup" aria-labelledby="format-label">
+                <button type="button" role="radio" aria-checked="true" data-format="jpeg">JPEG</button>
+                <button type="button" role="radio" aria-checked="false" data-format="png">PNG</button>
+                <button type="button" role="radio" aria-checked="false" data-format="webp">WebP</button>
+              </div>
+              <span id="format-hint" class="fine"></span>
+            </div>
+
+            <div id="meta-group" class="field" role="group" aria-labelledby="meta-label" hidden>
+              <span class="field-label meta-label">
+                <span id="meta-label">Photo details</span>
+                <span class="tip-wrap">
+                  <button
+                    id="meta-info"
+                    class="info-btn"
+                    type="button"
+                    aria-label="What are photo details?"
+                    aria-describedby="meta-tip"
+                    aria-haspopup="dialog"
+                  >
+                    <i data-icon="info"></i>
+                  </button>
+                  <span id="meta-tip" class="tip" role="tooltip">
+                    Hidden info your camera saved inside the photo: where it was taken (GPS) and the camera,
+                    lens, settings and date. Click to learn when to keep it.
+                  </span>
+                </span>
+              </span>
+              <label class="switch-row">
+                <span class="switch-text">
+                  <b>Keep location</b>
+                  <small id="meta-gps-note">-</small>
+                </span>
+                <input id="keep-gps" class="switch" type="checkbox" role="switch" />
+              </label>
+              <label class="switch-row">
+                <span class="switch-text">
+                  <b>Keep camera details</b>
+                  <small id="meta-cam-note">-</small>
+                </span>
+                <input id="keep-cam" class="switch" type="checkbox" role="switch" />
+              </label>
+              <span id="meta-hint" class="fine" hidden></span>
+            </div>
+
+            <dl class="export-facts">
+              <div>
+                <dt>Size</dt>
+                <dd id="exp-dims">-</dd>
+              </div>
+              <div>
+                <dt>File</dt>
+                <dd><span id="exp-bytes">-</span> <span id="exp-flag" class="flag" hidden></span></dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <footer class="export-foot">
+          <p id="meta-status" class="fine">Made on this device. Location and camera details are removed.</p>
+          <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+          <button id="download" class="btn btn-accent" type="submit" value="download">
+            <i data-icon="download"></i>Download
+          </button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="meta-help" class="export meta-help" aria-labelledby="meta-help-title">
+      <header class="export-head">
+        <h2 id="meta-help-title">Location and camera details</h2>
+        <button class="icon-btn" type="button" data-close aria-label="Close">
+          <i data-icon="close"></i>
+        </button>
+      </header>
+      <div class="help-body">
+        <p>
+          When a phone or camera takes a photo, it quietly saves extra information inside the file. You can't
+          see it in the picture, but anyone who gets the file can read it with free tools.
+        </p>
+
+        <div class="help-cards">
+          <section class="help-card">
+            <h3><i data-icon="pin"></i>Location (GPS)</h3>
+            <p>
+              The exact spot where the photo was taken, often within a few metres. For photos taken at home it
+              can reveal your address.
+            </p>
+          </section>
+          <section class="help-card">
+            <h3><i data-icon="camera"></i>Camera details</h3>
+            <p>
+              Phone or camera model, lens, settings like exposure and ISO, the date and time it was taken, and
+              the editing app.
+            </p>
+          </section>
+        </div>
+
+        <h3 class="help-h">Should I keep them?</h3>
+        <ul class="help-list">
+          <li>
+            <span class="pill pill-off">Remove both</span>
+            <span
+              ><b>Passport, visa, ID, exam or job forms.</b> Offices only need the picture, and extra data
+              just adds size.</span
+            >
+          </li>
+          <li>
+            <span class="pill pill-off">Remove location</span>
+            <span
+              ><b>Posting online or sending to people you don't know.</b> Location can show where you live,
+              work or study.</span
+            >
+          </li>
+          <li>
+            <span class="pill pill-half">Keep camera only</span>
+            <span
+              ><b>Photography portfolios or contests.</b> Shows your gear and settings without giving away
+              places.</span
+            >
+          </li>
+          <li>
+            <span class="pill pill-on">Keep both</span>
+            <span
+              ><b>Your own backups and albums.</b> Photo apps use date and place to sort and map your
+              memories.</span
+            >
+          </li>
+        </ul>
+
+        <p class="fine">
+          Not sure? Leave both off - that's the safe choice. KiloCrop always removes camera serial numbers and
+          the hidden thumbnail (which can show the uncropped photo). Your original file is never changed.
+        </p>
+      </div>
+    </dialog>
+
+    <input id="file-input" type="file" accept="image/*" hidden />
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

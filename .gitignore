@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dev-dist/
+*.log
+.DS_Store
+
+# Local-only helpers, not part of the published project
+upload-to-github.bat
+concepts/
