@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Crop to any ratio. Shrink to any size.</b><br>
-  Passport, visa and upload-ready photos - made privately in your browser.
+  Passport, visa and upload-ready photos.
 </p>
 
 <p align="center"><a href="https://mavi-cyber.github.io/KiloCrop/"><b>Open KiloCrop →</b></a></p>
