@@ -13,7 +13,7 @@
 
 ---
 
-KiloCrop (formerly **IDPhotoResizer**) crops photos to exact shapes and pixel sizes for passports, visas, profile
+KiloCrop (formerly <a href="https://github.com/mavi-cyber/IDPhotoResizer">**IDPhotoResizer**</a>) crops photos to exact shapes and pixel sizes for passports, visas, profile
 pictures and upload forms. Everything runs on your own device: no uploads, no account, no tracking.
 
 ## Features
